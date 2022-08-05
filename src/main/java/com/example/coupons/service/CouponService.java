@@ -27,8 +27,8 @@ public class CouponService {
         this.couponsRepository = couponsRepository;
     }
 
-    public CouponResponse addCoupon(Coupon coupon) {
-
+    public CouponResponse addCoupon(CouponRequest couponRequest) {
+        Coupon coupon = new Coupon(couponRequest);
         Coupon cp = couponsRepository.findById(coupon.getCouponid()).orElse(null);
         Coupon savedCoupon;
 

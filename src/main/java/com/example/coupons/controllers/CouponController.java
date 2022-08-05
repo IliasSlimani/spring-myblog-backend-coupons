@@ -37,12 +37,12 @@ public class CouponController {
     }
 
     @PostMapping("/addcoupon")
-    public ResponseEntity<Object> addCoupon(@RequestBody Coupon coupon) {
+    public ResponseEntity<Object> addCoupon(@RequestBody CouponRequest couponRequest) {
 
 
-        log.info("Coupon: " + coupon.toString());
+        log.info("Coupon: " + couponRequest.toString());
 
-        CouponResponse couponResponse = couponService.addCoupon(coupon);
+        CouponResponse couponResponse = couponService.addCoupon(couponRequest);
         log.info("Saved Coupon: " + couponResponse);
 
         String msg = "Coupon " + couponResponse.getName() + " saved successfully";
