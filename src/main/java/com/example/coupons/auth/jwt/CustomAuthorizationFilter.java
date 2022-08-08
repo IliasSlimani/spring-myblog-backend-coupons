@@ -23,25 +23,30 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String token = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
-                JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = jwtVerifier.verify(token);
-                String username = decodedJWT.getSubject();
-                // Roles
+        if(request.getServletPath().contains("/api") || request.getServletPath().contains("/login") || request.getServletPath().contains("/register"))
+            filterChain.doFilter(request,response);
+        else {
+            String authorizationHeader = request.getHeader("Authorization");
+            if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                try {
+                    String token = authorizationHeader.substring("Bearer ".length());
+                    Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
+                    JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+                    DecodedJWT decodedJWT = jwtVerifier.verify(token);
+                    String username = decodedJWT.getSubject();
+                    // Roles
 
-                // Authentication token
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, "");
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    // Authentication token
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, "");
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
-                filterChain.doFilter(request,response);
-            } catch(Exception ex) {
-                filterChain.doFilter(request,response);
+                    filterChain.doFilter(request,response);
+                } catch(Exception ex) {
+                    filterChain.doFilter(request,response);
+                }
+
             }
-
         }
+
     }
 }

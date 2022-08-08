@@ -13,24 +13,17 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="user")
-public class User {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fname;
+    private String name;
 
-    private String lname;
+    @Column(length = 500)
+    private String description;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    private String password;
-
-    @ManyToMany(mappedBy = "users")
-    private List<Role> roles;
-
-
+    @OneToMany(mappedBy = "category")
+    private List<Coupon> coupons;
 }

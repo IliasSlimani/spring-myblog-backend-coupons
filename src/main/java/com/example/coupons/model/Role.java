@@ -13,24 +13,16 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="user")
-public class User {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fname;
+    @Column(unique = true)
+    private String name;
 
-    private String lname;
-
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    private String password;
-
-    @ManyToMany(mappedBy = "users")
-    private List<Role> roles;
-
+    @ManyToMany
+    private List<User> users;
 
 }

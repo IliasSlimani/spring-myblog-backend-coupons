@@ -13,8 +13,5 @@ public class CouponsApplication {
         SpringApplication.run(CouponsApplication.class, args);
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 }

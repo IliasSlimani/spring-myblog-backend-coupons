@@ -48,7 +48,7 @@ public class CouponService {
 
     }
 
-    public CouponResponse getCoupon(Integer couponId) {
+    public CouponResponse getCoupon(Long couponId) {
 
         Coupon cp = couponsRepository.findById(couponId).orElse(null);
 
@@ -64,7 +64,7 @@ public class CouponService {
 
     }
 
-    public String removeCoupon(Integer couponid) {
+    public String removeCoupon(Long couponid) {
         Coupon cp = couponsRepository.findById(couponid).orElse(null);
         if(cp != null) {
             couponsRepository.delete(cp);
@@ -76,7 +76,7 @@ public class CouponService {
 
 
     @Transactional
-    public CouponResponse updateCoupon(CouponRequest couponrequest, Integer couponId) {
+    public CouponResponse updateCoupon(CouponRequest couponrequest, Long couponId) {
         Coupon cp = couponsRepository.findById(couponId).orElse(null);
         if(cp != null) {
 

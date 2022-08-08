@@ -18,7 +18,7 @@ public class Coupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int couponid;
+    private Long couponid;
 
     @Column(nullable = false, name = "name")
     private String name;
@@ -45,6 +45,12 @@ public class Coupon {
     private List<String> tag;
     @Column(nullable = false)
     private Long nRating;
+
+    @OneToMany(mappedBy = "coupon")
+    private List<Deal> deals;
+
+    @ManyToOne
+    private Category category;
 
     public Coupon(CouponRequest couponRequest) {
         this.descr = couponRequest.getDescr();

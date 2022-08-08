@@ -48,4 +48,18 @@ public class GlobalExceptionHandling {
         return new ErrorMsg("Internal Error", HttpStatus.INTERNAL_SERVER_ERROR.toString(), new Date());
     }
 
+    @ExceptionHandler(value = DuplicateResource.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorMsg duplicateRsr(DuplicateResource duplicateResource) {
+        return new ErrorMsg(duplicateResource.getMsg(), HttpStatus.BAD_REQUEST.toString(), new Date());
+    }
+
+    @ExceptionHandler(value = EmptyRequestParam.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorMsg EmptyRequiredParam(EmptyRequestParam emptyRequestParam) {
+        return new ErrorMsg(emptyRequestParam.getMsg(), HttpStatus.BAD_REQUEST.toString(), new Date());
+    }
+
 }

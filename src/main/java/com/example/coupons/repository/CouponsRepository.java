@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
+public interface CouponsRepository extends JpaRepository<Coupon, Long> {
 
 
     @Transactional
