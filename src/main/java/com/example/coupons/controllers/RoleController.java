@@ -69,17 +69,5 @@ public class RoleController {
         return responseHandler.generateResponse("All Roles have been retrieved successfully.", HttpStatus.OK, rolesResponse);
     }
 
-    @PostMapping("/addroletouser/{roleid}/{userid}")
-    ResponseEntity<Object> addRoletoUser(@PathVariable("roleid") Long roleid, @PathVariable("userid") Long userid) {
-        Map<String, String> response = roleService.addRoletoUser(roleid,userid);
-        return responseHandler.generateResponse("Role " + response.get("role") + " has been added successfully to user " + response.get("username"), HttpStatus.OK, "");
 
-    }
-
-    @PostMapping("/removerolefromuser/{roleid}/{userid}")
-    ResponseEntity<Object> removeRoleFromUser(@PathVariable("roleid") Long roleid,@PathVariable("userid") Long userid) {
-        Map<String, String> response = roleService.removeRoleFromUser(roleid,userid);
-        return responseHandler.generateResponse("Role " + response.get("role") + " has been removed successfully from user " + response.get("username"), HttpStatus.OK, "");
-
-    }
 }

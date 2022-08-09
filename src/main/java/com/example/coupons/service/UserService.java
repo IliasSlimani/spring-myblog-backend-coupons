@@ -2,20 +2,26 @@ package com.example.coupons.service;
 
 import com.example.coupons.model.User;
 import com.example.coupons.model.User;
+import com.example.coupons.request.UserRequest;
+import com.example.coupons.response.UserResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
-    User addUser(User user);
+    UserResponse addUser(UserRequest userRequest);
 
     Boolean removeUser(Long userid);
 
-    User updateUser(User user, Long id);
+    UserResponse updateUser(UserRequest userRequest, Long id);
 
     User getUser(Long userid);
-     List<User> getAllUsers();
+     List<UserResponse> getAllUsers();
 
+    Map<String,String> addRoletoUser(Long roleid, Long userid);
+
+    Map<String, String> removeRoleFromUser(Long roleid, Long userid);
      // Update usernames later depends on use case but for now dont
 
 

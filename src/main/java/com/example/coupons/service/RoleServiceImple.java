@@ -23,8 +23,6 @@ public class RoleServiceImple implements RoleService{
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private UserService userService;
 
     @Override
     public Role addRole(Role role) {
@@ -98,72 +96,7 @@ public class RoleServiceImple implements RoleService{
 
     }
 
-    @Override
-    @Transactional
-    public Map<String,String> addRoletoUser(Long roleid, Long userid) {
-        Role role = roleRepository.findById(roleid).orElse(null);
-        User user = userService.getUser(userid);
 
-        Map<String,String> response = new HashMap<>();
-        if(role == null)
-            throw new ResourceNotFound("Role " + roleid + " not found");
-        if(user == null)
-            throw new ResourceNotFound("User " + userid + " not found");
-
-        if(role != null && user != null) {
-            List<Role> roles = user.getRoles();
-            List<User> users = role.getUsers();
-
-            if(roles.contains(role))
-                throw new DuplicateResource("User " + user.getUsername() + " has already this role " + role.getName());
-
-            roles.add(role);
-            users.add(user);
-
-            user.setRoles(roles);
-            role.setUsers(users);
-
-            response.put("role", role.getName());
-            response.put("username", user.getUsername());
-            return response;
-        }
-
-
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public Map<String, String> removeRoleFromUser(Long roleid, Long userid) {
-        Role role = roleRepository.findById(roleid).orElse(null);
-        User user = userService.getUser(userid);
-
-        Map<String,String> response = new HashMap<>();
-        if(role == null)
-            throw new ResourceNotFound("Role " + roleid + " not found");
-        if(user == null)
-            throw new ResourceNotFound("User " + userid + " not found");
-
-        if(role != null && user != null) {
-            List<Role> roles = user.getRoles();
-            List<User> users = role.getUsers();
-
-            if(roles.contains(role)) {
-                roles.remove(role);
-                users.remove(user);
-                user.setRoles(roles);
-                role.setUsers(users);
-            } else
-                throw new ResourceNotFound("User " + user.getUsername() + " don't have role " + role.getName());
-
-
-
-            response.put("role", role.getName());
-            response.put("username", user.getUsername());
-            return response;
-        }
-        return null;
-    }
 
     @Override
     public List<Role> getAllRoles() {

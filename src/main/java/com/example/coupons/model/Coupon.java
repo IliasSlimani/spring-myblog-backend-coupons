@@ -52,31 +52,5 @@ public class Coupon {
     @ManyToOne
     private Category category;
 
-    public Coupon(CouponRequest couponRequest) {
-        this.descr = couponRequest.getDescr();
-        this.name = couponRequest.getName();
-        this.tips = couponRequest.getTips();
-        this.nuses = couponRequest.getNuses();
-        this.nleft = couponRequest.getNleft();
-        this.rating = couponRequest.getRating();
-        this.image = couponRequest.getImage();
-        this.nRating = couponRequest.getNRating();
 
-        // Adding Tags
-        List<String> tags = new ArrayList<>();
-        couponRequest.getTag().forEach(tag -> {
-            tags.add(tag);
-        });
-        this.tag = tags;
-
-        // Adding Types
-
-        List<String> types = new ArrayList<>();
-        couponRequest.getType().forEach(type -> {
-            types.add(type);
-        });
-
-        this.type = types;
-
-    }
 }

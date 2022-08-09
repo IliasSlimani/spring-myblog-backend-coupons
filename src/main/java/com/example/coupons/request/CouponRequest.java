@@ -3,6 +3,7 @@ package com.example.coupons.request;
 import com.example.coupons.model.Coupon;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -34,6 +35,10 @@ public class CouponRequest {
     private List<String> tag;
 
     private Long nRating;
+
+    private List<Long> deals;
+
+    private Long category;
     
     public CouponRequest(Coupon coupon) {
         this.setName(coupon.getName());
@@ -42,6 +47,13 @@ public class CouponRequest {
         this.setNuses(coupon.getNuses());
         this.setNleft(coupon.getNleft());
         this.setNRating(coupon.getNRating());
-
+        this.setTag(coupon.getTag());
+        this.setType(coupon.getType());
+        this.setCategory(coupon.getCategory().getId());
+        ArrayList<Long> deals = new ArrayList<>();
+        coupon.getDeals().forEach(deal -> {
+            deals.add(deal.getId());
+        });
+        this.deals = deals;
     }
 }

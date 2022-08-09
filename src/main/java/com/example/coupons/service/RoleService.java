@@ -18,9 +18,5 @@ public interface RoleService {
 
     Role getRole(Long roleid);
 
-    Map<String,String> addRoletoUser(Long roleid, Long userId);
-
-    Map<String,String> removeRoleFromUser(Long roleid, Long userId);
-
     List<Role> getAllRoles();
 }

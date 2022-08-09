@@ -29,8 +29,9 @@ public class DealController {
 
     @PostMapping("/adddeal")
     ResponseEntity<Object> addDeal(@RequestBody DealRequest dealRequest) {
-        Deal deal_ = dealService.addDeal(dealRequest);
-        DealResponse dealResponse = new DealResponse(deal_);
+
+        DealResponse dealResponse = dealService.addDeal(dealRequest);
+
         return responseHandler.generateResponse("Deal has been saved successfully", HttpStatus.OK, dealResponse);
     }
 
@@ -42,10 +43,10 @@ public class DealController {
     }
 
     @PostMapping("/updatedeal/{dealid}")
-    ResponseEntity<Object> updateDeal(@RequestBody Deal deal, @PathVariable("dealid") Long id) {
+    ResponseEntity<Object> updateDeal(@RequestBody DealRequest dealRequest, @PathVariable("dealid") Long id) {
 
-        Deal deal_ = dealService.updateDeal(deal, id);
-        DealResponse dealResponse = new DealResponse(deal_);
+        DealResponse dealResponse = dealService.updateDeal(dealRequest, id);
+
         return responseHandler.generateResponse("Deal " + id + " has been updated successfully", HttpStatus.OK, dealResponse);
 
     }
@@ -60,26 +61,9 @@ public class DealController {
 
     @GetMapping("/getalldeals")
     ResponseEntity<Object> getAllDeals() {
-        List<Deal> deals = dealService.getAllDeals();
-        List<DealResponse> dealsResponse = new ArrayList<>();
-        deals.forEach(deal -> {
-            DealResponse dealResponse = new DealResponse(deal);
-            dealsResponse.add(dealResponse);
-        });
+        List<DealResponse> dealsResponse = dealService.getAllDeals();
+
         return responseHandler.generateResponse("All Deals have been retrieved successfully.", HttpStatus.OK, dealsResponse);
     }
 
-    @PostMapping("/adddealtocoupon/{dealid}/{couponid}")
-    ResponseEntity<Object> addDealtoCoupon(@PathVariable("dealid") Long dealid, @PathVariable("couponid") Long couponid) {
-        Map<String, String> response = dealService.addDealtoCoupon(dealid,couponid);
-        return responseHandler.generateResponse("Deal " + response.get("deal") + " has been added successfully to coupon " + response.get("couponname"), HttpStatus.OK, "");
-
-    }
-
-    @PostMapping("/removedealfromcoupon/{dealid}/{couponid}")
-    ResponseEntity<Object> removeDealFromCoupon(@PathVariable("dealid") Long dealid,@PathVariable("couponid") Long couponid) {
-        Map<String, String> response = dealService.removeDealFromCoupon(dealid,couponid);
-        return responseHandler.generateResponse("Deal " + response.get("deal") + " has been removed successfully from coupon " + response.get("couponname"), HttpStatus.OK, "");
-
-    }
 }

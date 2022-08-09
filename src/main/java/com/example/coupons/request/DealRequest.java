@@ -33,6 +33,6 @@ public class DealRequest {
     private String image;
 
 
-    private Long couponId;
+    private Long coupon;
 
 }

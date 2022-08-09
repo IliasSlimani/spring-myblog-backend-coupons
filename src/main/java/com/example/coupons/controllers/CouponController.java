@@ -2,8 +2,9 @@ package com.example.coupons.controllers;
 
 import com.example.coupons.model.Coupon;
 import com.example.coupons.request.CouponRequest;
+import com.example.coupons.response.CategoryResponse;
 import com.example.coupons.response.CouponResponse;
-import com.example.coupons.service.CouponService;
+import com.example.coupons.service.CouponServiceImpl;
 import com.example.coupons.utils.ResponseHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +22,16 @@ import java.util.List;
 public class CouponController {
 
     @Autowired
-    private CouponService couponService;
+    private CouponServiceImpl couponService;
 
     @Autowired
     private ResponseHandler responseHandler;
 
     @GetMapping("/coupon/{couponId}")
-    public ResponseEntity<Object> getCoupon(@PathVariable("couponId") Integer couponId) {
+    public ResponseEntity<Object> getCoupon(@PathVariable("couponId") Long couponId) {
         log.info("Coupon id: " + couponId);
-        CouponResponse couponResponse = couponService.getCoupon(couponId);
+        Coupon coupon = couponService.getCoupon(couponId);
+        CouponResponse couponResponse = new CouponResponse(coupon);
         String msg = "Coupon " + couponResponse.getName() + " retrieved successfully";
 
         return responseHandler.generateResponse(msg,HttpStatus.OK, couponResponse);
@@ -39,11 +41,8 @@ public class CouponController {
     @PostMapping("/addcoupon")
     public ResponseEntity<Object> addCoupon(@RequestBody CouponRequest couponRequest) {
 
-
-        log.info("Coupon: " + couponRequest.toString());
-
         CouponResponse couponResponse = couponService.addCoupon(couponRequest);
-        log.info("Saved Coupon: " + couponResponse);
+
 
         String msg = "Coupon " + couponResponse.getName() + " saved successfully";
 
@@ -51,7 +50,7 @@ public class CouponController {
     }
 
     @PutMapping("/updatecoupon/{couponId}")
-    public ResponseEntity<Object> updateCoupon(@RequestBody CouponRequest couponRequest, @PathVariable("couponId") Integer couponId) {
+    public ResponseEntity<Object> updateCoupon(@RequestBody CouponRequest couponRequest, @PathVariable("couponId") Long couponId) {
 
 
 
@@ -62,9 +61,9 @@ public class CouponController {
     }
 
     @DeleteMapping("/deletecoupon/{couponid}")
-    public ResponseEntity<Object> deleteCoupon(@PathVariable("couponid") Integer couponId) {
-        String msg = couponService.removeCoupon(couponId);
-        return responseHandler.generateResponse(msg, HttpStatus.OK, "" );
+    public ResponseEntity<Object> deleteCoupon(@PathVariable("couponid") Long couponId) {
+        couponService.removeCoupon(couponId);
+        return responseHandler.generateResponse("Coupon " + couponId + " has been deleted successfully", HttpStatus.OK, "" );
     }
 
     @GetMapping("/coupons")
@@ -74,5 +73,7 @@ public class CouponController {
 
         return responseHandler.generateResponse("All coupons retrieved successfully", HttpStatus.OK, coupons);
     }
+
+
 
 }

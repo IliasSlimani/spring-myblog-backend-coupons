@@ -1,6 +1,7 @@
 package com.example.coupons.controllers;
 
 import com.example.coupons.model.User;
+import com.example.coupons.request.UserRequest;
 import com.example.coupons.response.UserResponse;
 import com.example.coupons.service.UserService;
 import com.example.coupons.utils.ResponseHandler;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -27,9 +29,9 @@ public class UserController {
     private ResponseHandler responseHandler;
 
     @PostMapping("/adduser")
-    ResponseEntity<Object> addUser(@RequestBody User user) {
-        User user_ = userService.addUser(user);
-        UserResponse userResponse = new UserResponse(user_);
+    ResponseEntity<Object> addUser(@RequestBody UserRequest userRequest) {
+        UserResponse userResponse = userService.addUser(userRequest);
+
         return responseHandler.generateResponse("User has been saved successfully", HttpStatus.OK, userResponse);
     }
 
@@ -41,10 +43,10 @@ public class UserController {
     }
 
     @PostMapping("/updateuser/{userid}")
-    ResponseEntity<Object> updateUser(@RequestBody User user, @PathVariable("userid") Long id) {
+    ResponseEntity<Object> updateUser(@RequestBody UserRequest userRequest, @PathVariable("userid") Long id) {
 
-        User user_ = userService.updateUser(user, id);
-        UserResponse userResponse = new UserResponse(user_);
+        UserResponse userResponse = userService.updateUser(userRequest, id);
+
         return responseHandler.generateResponse("User " + id + " has been updated successfully", HttpStatus.OK, userResponse);
 
     }
@@ -58,13 +60,24 @@ public class UserController {
 
     @GetMapping("/getallusers")
     ResponseEntity<Object> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserResponse> usersResponse = new ArrayList<>();
-        users.forEach(user -> {
-            UserResponse userResponse = new UserResponse(user);
-            usersResponse.add(userResponse);
-        });
+        List<UserResponse> usersResponse = userService.getAllUsers();
+
+
         return responseHandler.generateResponse("All Users have been retrieved successfully.", HttpStatus.OK, usersResponse);
+    }
+
+    @PostMapping("/addroletouser/{roleid}/{userid}")
+    ResponseEntity<Object> addRoletoUser(@PathVariable("roleid") Long roleid, @PathVariable("userid") Long userid) {
+        Map<String, String> response = userService.addRoletoUser(roleid,userid);
+        return responseHandler.generateResponse("Role " + response.get("role") + " has been added successfully to user " + response.get("username"), HttpStatus.OK, "");
+
+    }
+
+    @PostMapping("/removerolefromuser/{roleid}/{userid}")
+    ResponseEntity<Object> removeRoleFromUser(@PathVariable("roleid") Long roleid,@PathVariable("userid") Long userid) {
+        Map<String, String> response = userService.removeRoleFromUser(roleid,userid);
+        return responseHandler.generateResponse("Role " + response.get("role") + " has been removed successfully from user " + response.get("username"), HttpStatus.OK, "");
+
     }
 
 

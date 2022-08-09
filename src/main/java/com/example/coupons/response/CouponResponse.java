@@ -3,6 +3,7 @@ package com.example.coupons.response;
 import com.example.coupons.model.Coupon;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.util.List;
 public class CouponResponse {
 
 
-    private int id;
+    private Long id;
 
     private String name;
 
@@ -39,6 +40,10 @@ public class CouponResponse {
     private List<String> tag;
 
     private Long nRating;
+
+    private List<Long> deals;
+
+    private Long category;
     
     public CouponResponse(Coupon coupon) {
         this.setId(coupon.getCouponid());
@@ -52,6 +57,16 @@ public class CouponResponse {
         this.setNuses(coupon.getNuses());
         this.setType(coupon.getType());
         this.setTag(coupon.getTag());
+        if(coupon.getCategory() != null)
+            this.setCategory(coupon.getCategory().getId());
+        if(coupon.getDeals() != null) {
+            ArrayList<Long> deals = new ArrayList<>();
+            coupon.getDeals().forEach(deal -> {
+                deals.add(deal.getId());
+
+            });
+            this.setDeals(deals);
+        }
 
 
     }
