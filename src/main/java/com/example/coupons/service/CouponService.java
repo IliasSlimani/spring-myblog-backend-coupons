@@ -19,5 +19,8 @@ public interface CouponService {
 
     List<CouponResponse> getAllCoupons();
 
+    CouponResponse addDealtoCoupon(Long couponid, Long dealid);
+
+    CouponResponse removeDealFromCoupon(Long couponid, Long dealid);
 
 }

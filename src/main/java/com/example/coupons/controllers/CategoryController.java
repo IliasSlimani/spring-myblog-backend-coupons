@@ -74,6 +74,17 @@ public class CategoryController {
         return responseHandler.generateResponse("All categories retrieved successfully", HttpStatus.OK, categoryResponses);
     }
 
+    @PostMapping("/addcoupontocategory/{coupon}/{category}")
+    ResponseEntity<Object> addCoupontoCategory(@PathVariable("category") Long categoryid, @PathVariable("coupon") Long couponid) {
+        CategoryResponse response = categoryService.addCouponToCategory(couponid,categoryid);
+        return responseHandler.generateResponse("Coupon " + couponid + " has been added successfully to Category " + categoryid, HttpStatus.OK, response);
 
+    }
 
+    @PostMapping("/removecouponfromcategory/{coupon}/{category}")
+    ResponseEntity<Object> removeCouponFromCategory(@PathVariable("category") Long categoryid,@PathVariable("coupon") Long couponid) {
+        CategoryResponse response = categoryService.removeCouponFromCategory(couponid,categoryid);
+        return responseHandler.generateResponse("Coupon " + couponid + " has been removed successfully from Category " + categoryid, HttpStatus.OK, response);
+
+    }
 }

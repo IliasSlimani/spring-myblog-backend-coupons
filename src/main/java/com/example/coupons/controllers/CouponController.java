@@ -74,6 +74,20 @@ public class CouponController {
         return responseHandler.generateResponse("All coupons retrieved successfully", HttpStatus.OK, coupons);
     }
 
+    @PostMapping("/addDealtoCoupon/{deal}/{coupon}")
+    ResponseEntity<Object> addDealtoCoupon(@PathVariable("coupon") Long couponid, @PathVariable("deal") Long dealid) {
+        CouponResponse response = couponService.addDealtoCoupon(couponid,dealid);
+        return responseHandler.generateResponse("Deal " + dealid + " has been added successfully to Coupon " + couponid, HttpStatus.OK, response);
+
+    }
+
+    @PostMapping("/removeDealFromCoupon/{deal}/{coupon}")
+    ResponseEntity<Object> removeDealFromCoupon(@PathVariable("coupon") Long couponid,@PathVariable("deal") Long dealid) {
+        CouponResponse response = couponService.removeDealFromCoupon(couponid,dealid);
+        return responseHandler.generateResponse("Coupon " + dealid + " has been removed successfully from Coupon " + couponid, HttpStatus.OK, response);
+
+    }
+
 
 
 }

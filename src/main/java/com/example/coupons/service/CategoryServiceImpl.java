@@ -88,7 +88,55 @@ public class CategoryServiceImpl implements  CategoryService{
         return categoryResponses;
     }
 
+    @Override
+    @Transactional
+    public CategoryResponse addCouponToCategory(Long couponId, Long categoryId) {
 
+        Coupon coupon = couponsRepository.findById(couponId).orElse(null);
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+
+        if(category == null)
+            throw new ResourceNotFound("No Category with id " + categoryId + " found");
+
+        if(coupon == null)
+            throw new ResourceNotFound("No Coupon with id " + couponId + " found");
+
+        List<Coupon> coupons = category.getCoupons();
+        coupons.add(coupon);
+        category.setCoupons(coupons);
+
+        coupon.setCategory(category);
+
+        CategoryResponse categoryResponse = new CategoryResponse(category);
+
+
+        return categoryResponse;
+    }
+
+    @Override
+    @Transactional
+    public CategoryResponse removeCouponFromCategory(Long couponId, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+        Coupon coupon = couponsRepository.findById(couponId).orElse(null);
+
+        if(category == null)
+            throw new ResourceNotFound("No Category with id " + categoryId + " found");
+
+        if(coupon == null)
+            throw new ResourceNotFound("No Coupon with id " + couponId + " found");
+
+        List<Coupon> coupons = category.getCoupons();
+        coupons.remove(coupon);
+        category.setCoupons(coupons);
+
+        coupon.setCategory(null);
+
+        CategoryResponse categoryResponse = new CategoryResponse(category);
+
+
+        return categoryResponse;
+
+    }
 
 
 }

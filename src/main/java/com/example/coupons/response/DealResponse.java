@@ -39,6 +39,7 @@ public class DealResponse {
     private Long coupon;
 
     public DealResponse(Deal deal) {
+        this.id = deal.getId();
         this.name = deal.getName();
         this.description = deal.getDescription();
         this.totaluses = deal.getTotaluses();
@@ -46,6 +47,7 @@ public class DealResponse {
         this.code = deal.getCode();
         this.tags = deal.getTags();
         this.image = deal.getImage();
-        this.coupon = deal.getCoupon().getCouponid();
+        if(deal.getCoupon() != null)
+            this.coupon = deal.getCoupon().getCouponid();
     }
 }

@@ -16,5 +16,8 @@ public interface CategoryService {
 
     List<CategoryResponse> getAllCategories();
 
+    CategoryResponse addCouponToCategory(Long couponId, Long categoryId);
+
+    CategoryResponse removeCouponFromCategory(Long couponId, Long categoryId);
 
 }

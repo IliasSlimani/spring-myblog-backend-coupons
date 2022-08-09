@@ -153,6 +153,49 @@ public class CouponServiceImpl implements CouponService{
         }
     }
 
+    @Override
+    @Transactional
+    public CouponResponse addDealtoCoupon(Long couponid, Long dealid) {
+        Coupon coupon = couponsRepository.findById(couponid).orElse(null);
+        Deal deal = dealRepository.findById(dealid).orElse(null);
+
+        if(coupon == null)
+            throw new ResourceNotFound("No Coupon with id " + couponid + " found");
+
+        if(deal == null)
+            throw new ResourceNotFound("No Deal with id " + dealid + " found");
+
+        List<Deal> deals = coupon.getDeals();
+        deals.add(deal);
+        coupon.setDeals(deals);
+
+        deal.setCoupon(coupon);
+
+        CouponResponse couponResponse = new CouponResponse(coupon);
+        return couponResponse;
+    }
+
+    @Override
+    @Transactional
+    public CouponResponse removeDealFromCoupon(Long couponid, Long dealid) {
+        Coupon coupon = couponsRepository.findById(couponid).orElse(null);
+        Deal deal = dealRepository.findById(dealid).orElse(null);
+
+        if(coupon == null)
+            throw new ResourceNotFound("No Coupon with id " + couponid + " found");
+
+        if(deal == null)
+            throw new ResourceNotFound("No Deal with id " + dealid + " found");
+
+        List<Deal> deals = coupon.getDeals();
+        deals.remove(deal);
+        coupon.setDeals(deals);
+
+        deal.setCoupon(null);
+
+        CouponResponse couponResponse = new CouponResponse(coupon);
+        return couponResponse;
+    }
 
 
 }
