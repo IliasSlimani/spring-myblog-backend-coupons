@@ -13,19 +13,24 @@ import com.example.coupons.request.UserRequest;
 import com.example.coupons.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import java.util.*;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService,UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -36,10 +41,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleService roleService;
 
+
+
     @Override
     public UserResponse addUser(UserRequest userRequest) {
         //Should add role as well
-        if(userRequest.getRoles() != null)
+        if(userRequest.getRoles() == null)
             throw new EmptyRequestParam("At least one role id should be defined");
 
         User get_user = userRepository.findByUsername(userRequest.getUsername());
@@ -49,18 +56,26 @@ public class UserServiceImpl implements UserService {
                 user.setFname(userRequest.getFname());
                 user.setLname(userRequest.getLname());
                 user.setUsername(userRequest.getUsername());
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
                 ArrayList<Role> roles = new ArrayList<>();
+
+
                 userRequest.getRoles().forEach(roleid -> {
+
                     Role role = roleService.getRole(roleid);
+                    List<User> users = role.getUsers();
+                    users.add(user);
+                    role.setUsers(users);
                     roles.add(role);
                 });
                 user.setRoles(roles);
+
 
                 User user_ = userRepository.save(user);
                 UserResponse userResponse = new UserResponse(user_);
                 return userResponse;
             } catch(Exception ex) {
+
                 throw new InternalError("Internal Problem. Check with your admin");
             }
         } else {
@@ -74,8 +89,16 @@ public class UserServiceImpl implements UserService {
     public Boolean removeUser(Long userid) {
 
         User get_user = userRepository.findById(userid).orElse(null);
+
         if(get_user != null) {
             try {
+                List<Role> roles = get_user.getRoles();
+                roles.forEach(role -> {
+                    List<User> users = role.getUsers();
+                    users.remove(get_user);
+                    role.setUsers(users);
+
+                });
                 userRepository.delete(get_user);
                 return true;
             } catch(Exception ex) {
@@ -120,8 +143,14 @@ public class UserServiceImpl implements UserService {
 
                 userRequest.getRoles().forEach(roleid -> {
                     Role role = roleService.getRole(roleid);
-                    if(role != null)
-                        roles.add(role);
+
+                    if(role != null) {
+                        List<User> users = role.getUsers();
+                        users.add(user);
+                        role.setUsers(users);
+
+                    }
+
 
                 });
 
@@ -225,5 +254,34 @@ public class UserServiceImpl implements UserService {
             return response;
         }
         return null;
+    }
+
+    @Override
+    public User getUser(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null)
+            throw new ResourceNotFound("No user " + username + " found");
+        else
+            return user;
+    }
+
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+
+        if(user == null) {
+            log.error("User not found");
+            throw new UsernameNotFoundException("User not found");
+        } else
+            log.info("User found: " + username);
+        log.info("roles " + user.getRoles().toString());
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+        org.springframework.security.core.userdetails.User userS = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),authorities);
+
+        return userS;
     }
 }

@@ -24,5 +24,5 @@ public interface UserService {
     Map<String, String> removeRoleFromUser(Long roleid, Long userid);
      // Update usernames later depends on use case but for now dont
 
-
+    User getUser(String username);
 }
