@@ -20,6 +20,7 @@ public class UserRequest {
 
     private String lname;
 
+    private String email;
 
     private String username;
 

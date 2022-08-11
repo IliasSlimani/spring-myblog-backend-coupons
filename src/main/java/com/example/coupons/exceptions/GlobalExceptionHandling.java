@@ -1,13 +1,17 @@
 package com.example.coupons.exceptions;
 
+import jdk.nashorn.internal.parser.Token;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import java.util.Date;
 
@@ -62,4 +66,17 @@ public class GlobalExceptionHandling {
         return new ErrorMsg(emptyRequestParam.getMsg(), HttpStatus.BAD_REQUEST.toString(), new Date());
     }
 
+    @ExceptionHandler(value = TokenExpired.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorMsg TokenExpired(TokenExpired tokenExpired) {
+        return new ErrorMsg(tokenExpired.getMsg(), HttpStatus.UNAUTHORIZED.toString(), new Date());
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseBody
+    public ErrorMsg MethodNotAllowed(HttpRequestMethodNotSupportedException httpRequestMethodNotSupportedException) {
+        return new ErrorMsg(httpRequestMethodNotSupportedException.getMessage(), HttpStatus.METHOD_NOT_ALLOWED.toString(), new Date());
+    }
 }

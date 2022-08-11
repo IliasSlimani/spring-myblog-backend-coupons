@@ -29,6 +29,9 @@ public class User {
 
     private String password;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Role> roles;
 

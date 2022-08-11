@@ -103,4 +103,10 @@ public class RoleServiceImple implements RoleService{
         List<Role> roles = roleRepository.findAll();
         return roles;
     }
+
+    @Override
+    public Role getRoleByName(String name) {
+        Role role = roleRepository.findByName(name);
+        return role;
+    }
 }

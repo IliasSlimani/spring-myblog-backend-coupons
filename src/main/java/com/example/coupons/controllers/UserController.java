@@ -3,6 +3,8 @@ package com.example.coupons.controllers;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.coupons.model.Role;
 import com.example.coupons.model.User;
@@ -30,7 +32,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -50,12 +53,12 @@ public class UserController {
     private String secret;
 
     @GetMapping("/token/refresh")
-    void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader("Authorization");
-        log.info(authorizationHeader);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
+    void refreshToken(@CookieValue("refresh-token") String refresh, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        log.info(refresh);
+        if(refresh != null) {
             try {
-                String token = authorizationHeader.substring("Bearer".length()).trim();
+                String token = refresh;
 
                 Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
                 JWTVerifier jwtVerifier = JWT.require(algorithm).build();
@@ -70,18 +73,33 @@ public class UserController {
                         .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                         .sign(algorithm);
 
-                String refresh_token = JWT.create().
-                        withSubject(user.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 1440 * 60 * 1000))
-                        .withIssuer(request.getRequestURL().toString())
-                        .sign(algorithm);
 
 
                 response.setHeader("access-token", access_token);
-                response.setHeader("refresh-token", refresh_token);
+
+
+                response.setStatus(OK.value());
+                Map<String,String> tokens = new HashMap<>();
+                tokens.put("access-token", access_token);
+
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
 
 
+            } catch(TokenExpiredException expiredException) {
+
+                response.setStatus(UNAUTHORIZED.value());
+                Map<String,String> errors = new HashMap<>();
+                errors.put("error", "Refresh Token Expired");
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), errors);
+            } catch(JWTVerificationException jwtVerificationException) {
+                response.setStatus(UNAUTHORIZED.value());
+                Map<String,String> errors = new HashMap<>();
+                errors.put("error", "Bad Refresh Token");
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), errors);
             } catch (Exception ex) {
 
                 response.setHeader("error", ex.getMessage());
@@ -144,6 +162,14 @@ public class UserController {
         Map<String, String> response = userService.removeRoleFromUser(roleid,userid);
         return responseHandler.generateResponse("Role " + response.get("role") + " has been removed successfully from user " + response.get("username"), HttpStatus.OK, "");
 
+    }
+
+    @PostMapping("/register")
+    ResponseEntity<Object> register(@RequestBody UserRequest userRequest) {
+
+        UserResponse userResponse = userService.register(userRequest);
+
+        return responseHandler.generateResponse("User has been registered successfully", HttpStatus.OK, userResponse);
     }
 
 

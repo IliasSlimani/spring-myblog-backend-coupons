@@ -24,6 +24,7 @@ public class UserResponse {
 
     private String lname;
 
+    private String email;
 
     private String username;
 
@@ -38,6 +39,8 @@ public class UserResponse {
         this.lname = user.getLname();
         this.username = user.getUsername();
         this.password = user.getPassword();
+        if(user.getEmail() != null)
+            this.email = user.getEmail();
         List<Map<String,String>> roles = new ArrayList<>();
         user.getRoles().forEach(role -> {
             Map<String,String> role_ = new HashMap<>();

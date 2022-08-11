@@ -25,4 +25,6 @@ public interface UserService {
      // Update usernames later depends on use case but for now dont
 
     User getUser(String username);
+
+    UserResponse register(UserRequest userRequest);
 }

@@ -50,12 +50,20 @@ public class UserServiceImpl implements UserService,UserDetailsService {
             throw new EmptyRequestParam("At least one role id should be defined");
 
         User get_user = userRepository.findByUsername(userRequest.getUsername());
-        if(get_user == null) {
+        if(get_user != null)
+            throw new DuplicateResource("User " + userRequest.getUsername() + " Already exists");
+
+        User get_user_email = userRepository.findByEmail(userRequest.getEmail());
+        if(get_user_email != null)
+            throw new DuplicateResource("Email " + userRequest.getEmail() + " Already exists");
+
+        if(get_user == null && get_user_email == null) {
             try {
                 User user = new User();
                 user.setFname(userRequest.getFname());
                 user.setLname(userRequest.getLname());
                 user.setUsername(userRequest.getUsername());
+                user.setEmail(userRequest.getEmail());
                 user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
                 ArrayList<Role> roles = new ArrayList<>();
 
@@ -79,7 +87,10 @@ public class UserServiceImpl implements UserService,UserDetailsService {
                 throw new InternalError("Internal Problem. Check with your admin");
             }
         } else {
-            throw new DuplicateResource("User " + userRequest.getUsername() + " Already exists");
+
+                throw new DuplicateResource("User " + userRequest.getUsername() + " with email " + userRequest.getEmail() + " Already exists");
+
+
         }
 
 
@@ -128,12 +139,16 @@ public class UserServiceImpl implements UserService,UserDetailsService {
             User user = new User();
             user.setId(id);
             user.setUsername(user_f.getUsername());
+
             if(userRequest.getPassword() != null)
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             else
                 user.setPassword(user_f.getPassword());
             if(userRequest.getLname() != null)
                 user.setLname(userRequest.getLname());
+
+            if(userRequest.getEmail() != null)
+                user.setEmail(userRequest.getEmail());
 
             if(userRequest.getFname() != null)
                 user.setFname(userRequest.getFname());
@@ -265,10 +280,23 @@ public class UserServiceImpl implements UserService,UserDetailsService {
             return user;
     }
 
+    @Override
+    public UserResponse register(UserRequest userRequest) {
+
+        Role role = roleService.getRoleByName("USER");
+        ArrayList<Long> roles = new ArrayList<>();
+        roles.add(role.getId());
+        userRequest.setRoles(roles);
+        UserResponse userResponse = addUser(userRequest);
+
+
+        return userResponse;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByEmail(username);
 
         if(user == null) {
             log.error("User not found");
