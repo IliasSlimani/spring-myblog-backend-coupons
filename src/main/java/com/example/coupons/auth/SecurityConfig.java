@@ -7,6 +7,7 @@ import com.example.coupons.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Autowired
     private PasswordEncoder bCryptPasswordEncoder;
 
+    @Value("${jwt.secret}")
+    private String secret;
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
@@ -64,12 +69,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new CustomAuthenticationFilter(authenticationManagerBean()))
+                .addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), secret))
 
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 
-                http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                http.addFilterBefore(new CustomAuthorizationFilter(secret), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override

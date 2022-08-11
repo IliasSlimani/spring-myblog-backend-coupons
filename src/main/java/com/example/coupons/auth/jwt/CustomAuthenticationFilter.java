@@ -20,6 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.FilterChain;
@@ -36,6 +37,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
+
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
@@ -53,11 +55,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private AuthenticationManager authenticationManager;
 
+    private String secret;
 
-    private String secret = "3f8c1bd44b62fcb884f85f1323d8493d09032013";
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
-
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, String secret) {
+        this.secret = secret;
         this.authenticationManager = authenticationManager;
     }
     @Override
