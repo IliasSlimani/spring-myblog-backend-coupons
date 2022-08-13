@@ -28,7 +28,7 @@ public class UserResponse {
 
     private String username;
 
-    private String password;
+
 
 
     private List<Map<String,String>> roles;
@@ -38,7 +38,7 @@ public class UserResponse {
         this.fname = user.getFname();
         this.lname = user.getLname();
         this.username = user.getUsername();
-        this.password = user.getPassword();
+
         if(user.getEmail() != null)
             this.email = user.getEmail();
         List<Map<String,String>> roles = new ArrayList<>();

@@ -65,6 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
                 http.authorizeRequests().antMatchers("/api/register", "/login", "/api/categories", "/api/category/**", "/api/getalldeals", "/api/getdeal/**", "/api/coupon/**", "/api/coupons", "/api/token/refresh").permitAll()
                 .antMatchers("/api/addDealtoCoupon/**", "/api/removeDealFromCoupon/**", "/api/adddeal","/api/addcoupontocategory/**","/api/removecouponfromcategory/**","/api/deletecategory/**","/api/updatecategory/**","/api/addcategory","/api/updatecoupon/**","/api/addcoupon","/api/deletecoupon/**","/api/adduser","/api/removeuser/**","/api/updateuser/**","/api/addrole","/api/removerole/**","/api/updaterole/**","/api/addroletouser/**","/api/removerolefromuser/**").hasAnyAuthority("ADMIN")
+                        .antMatchers("/api/getid").hasAnyAuthority("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

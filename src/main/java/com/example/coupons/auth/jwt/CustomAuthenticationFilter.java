@@ -95,6 +95,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Transactional
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
+
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         String access_token = JWT.create().
                 withSubject(user.getUsername())
@@ -114,7 +115,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         // Set Refresh Token as Http only cookie
 
-        Cookie cookie = new Cookie("refresh-token", refresh_token);
+        Cookie cookie = new Cookie("refresh_token", refresh_token);
         cookie.setHttpOnly(true);
         // Set cookie to secure on prod
         //cookie.setSecure(true);
@@ -126,7 +127,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         response.setStatus(OK.value());
         Map<String,String> tokens = new HashMap<>();
-        tokens.put("access-token", access_token);
+        tokens.put("access_token", access_token);
+
 
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);

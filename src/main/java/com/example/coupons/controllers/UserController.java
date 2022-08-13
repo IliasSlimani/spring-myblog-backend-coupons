@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @Data
 @RequestMapping(value = "/api", produces ="application/json" )
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
     @Autowired
@@ -53,9 +53,9 @@ public class UserController {
     private String secret;
 
     @GetMapping("/token/refresh")
-    void refreshToken(@CookieValue("refresh-token") String refresh, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    void refreshToken(@CookieValue("refresh_token") String refresh, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        log.info(refresh);
+
         if(refresh != null) {
             try {
                 String token = refresh;
@@ -80,7 +80,7 @@ public class UserController {
 
                 response.setStatus(OK.value());
                 Map<String,String> tokens = new HashMap<>();
-                tokens.put("access-token", access_token);
+                tokens.put("access_token", access_token);
 
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
@@ -140,6 +140,22 @@ public class UserController {
         User user = userService.getUser(userid);
         UserResponse userResponse = new UserResponse(user);
         return responseHandler.generateResponse("User " + userid + " has been retrieved successfully", HttpStatus.OK, userResponse);
+    }
+
+    @GetMapping("/getid")
+    ResponseEntity<Object> getID(@RequestHeader("Authorization") String authorization ) {
+        String token = authorization.substring("Bearer".length()).trim();
+
+            Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
+            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
+            String username = decodedJWT.getSubject();
+            User user = userService.getUser(username);
+
+        Map<String,Long> response = new HashMap<>();
+        response.put("userid", user.getId());
+
+        return responseHandler.generateResponse("User ID has been retrieved successfully", HttpStatus.OK, response);
     }
 
     @GetMapping("/getallusers")
